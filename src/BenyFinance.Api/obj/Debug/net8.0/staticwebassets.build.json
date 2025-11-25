@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "HsNrqTfJ1HmpLyWAbvY0jnq7A3tVITkKBipF41wE2YA=",
+  "Source": "BenyFinance.Api",
+  "BasePath": "_content/BenyFinance.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

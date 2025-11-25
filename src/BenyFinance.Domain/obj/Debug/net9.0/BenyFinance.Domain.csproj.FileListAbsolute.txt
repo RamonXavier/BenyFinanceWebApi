@@ -1,0 +1,11 @@
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\bin\Debug\net9.0\BenyFinance.Domain.deps.json
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\bin\Debug\net9.0\BenyFinance.Domain.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\bin\Debug\net9.0\BenyFinance.Domain.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.AssemblyInfoInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.AssemblyInfo.cs
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.csproj.CoreCompileInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\refint\BenyFinance.Domain.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\BenyFinance.Domain.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Domain\obj\Debug\net9.0\ref\BenyFinance.Domain.dll

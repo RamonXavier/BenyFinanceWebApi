@@ -1,0 +1,6 @@
+@BenyFinanceWebApi_HostAddress = http://localhost:5238
+
+GET {{BenyFinanceWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

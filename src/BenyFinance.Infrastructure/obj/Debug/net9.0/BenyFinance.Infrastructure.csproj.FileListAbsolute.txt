@@ -1,0 +1,17 @@
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Infrastructure.deps.json
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Infrastructure.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Infrastructure.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Application.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Domain.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Domain.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\bin\Debug\net9.0\BenyFinance.Application.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.AssemblyInfo.cs
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFina.F7677765.Up2Date
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\refint\BenyFinance.Infrastructure.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\BenyFinance.Infrastructure.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Infrastructure\obj\Debug\net9.0\ref\BenyFinance.Infrastructure.dll

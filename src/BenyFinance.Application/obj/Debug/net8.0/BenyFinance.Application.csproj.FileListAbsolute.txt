@@ -1,0 +1,15 @@
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\bin\Debug\net8.0\BenyFinance.Application.deps.json
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\bin\Debug\net8.0\BenyFinance.Application.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\bin\Debug\net8.0\BenyFinance.Application.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\bin\Debug\net8.0\BenyFinance.Domain.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\bin\Debug\net8.0\BenyFinance.Domain.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.csproj.AssemblyReference.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.AssemblyInfoInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.AssemblyInfo.cs
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.csproj.CoreCompileInputs.cache
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFina.FAAEF2D6.Up2Date
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\refint\BenyFinance.Application.dll
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\BenyFinance.Application.pdb
+C:\Users\ramon\source\repos\BenyFinanceWebApi\BenyFinanceWebApi\src\BenyFinance.Application\obj\Debug\net8.0\ref\BenyFinance.Application.dll

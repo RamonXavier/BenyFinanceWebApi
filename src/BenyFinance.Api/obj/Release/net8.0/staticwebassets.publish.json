@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "90KaLAbijL0BWeqDeGHB1E4wqnIH6yLXS2d/YAl4lXg=",
+  "Source": "BenyFinance.Api",
+  "BasePath": "_content/BenyFinance.Api",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
