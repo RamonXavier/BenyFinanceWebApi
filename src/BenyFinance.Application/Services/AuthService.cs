@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using BenyFinance.Application.DTOs;
@@ -17,11 +18,13 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    public AuthService(IUserRepository userRepository, IConfiguration configuration, IEmailService emailService)
     {
         _userRepository = userRepository;
         _configuration = configuration;
+        _emailService = emailService;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
@@ -57,6 +60,42 @@ public class AuthService : IAuthService
         return new AuthResponseDto(token, new UserDto(user.Id, user.Name, user.Email));
     }
 
+    public async Task ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
+    {
+        var user = await _userRepository.GetByEmailAsync(forgotPasswordDto.Email);
+        if (user == null)
+        {
+            // Don't reveal that the user doesn't exist for security reasons
+            return;
+        }
+
+        // Generate a secure reset token
+        var resetToken = GenerateSecureToken();
+        user.PasswordResetToken = resetToken;
+        user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1); // Token expires in 1 hour
+
+        await _userRepository.UpdateAsync(user);
+
+        // Send the password reset email
+        await _emailService.SendPasswordResetEmailAsync(user.Email, user.Name, resetToken);
+    }
+
+    public async Task ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
+    {
+        var user = await _userRepository.GetByEmailAsync(resetPasswordDto.Email);
+        if (user == null || user.PasswordResetToken != resetPasswordDto.Token || user.PasswordResetTokenExpiry < DateTime.UtcNow)
+        {
+            throw new Exception("Invalid or expired token");
+        }
+
+        // Update password
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiry = null;
+
+        await _userRepository.UpdateAsync(user);
+    }
+
     private string GenerateJwtToken(User user)
     {
         var jwtKey = _configuration["Jwt:Key"] ?? "super_secret_key_that_should_be_long_enough_for_hs256";
@@ -79,5 +118,15 @@ public class AuthService : IAuthService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private string GenerateSecureToken()
+    {
+        var randomBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+        return Convert.ToBase64String(randomBytes).Replace('+', '-').Replace('/', '_').TrimEnd('=');
     }
 }
