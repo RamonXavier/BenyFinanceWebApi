@@ -1,0 +1,27 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=your-server; Database=your-database; User Id=your-user-id; Password=your-password; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;"
+  },
+  "Jwt": {
+    "Key": "ThisIsASecretKeyForBenyFinanceApiThatShouldBeLongEnough",
+    "Issuer": "BenyFinance",
+    "Audience": "BenyFinance"
+  },
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Email": "your-email@gmail.com",
+    "Password": "your-app-password",
+    "FromName": "BenyFinance"
+  },
+  "App": {
+    "FrontendUrl": "https://your-frontend-url.com"
+  }
+}

@@ -1,0 +1,52 @@
+﻿# Build results
+[Bb]in/
+[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
+
+# Visual Studio / IDE
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+CopilotIndices/
+
+# Rider
+.idea/
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.assets.json
+*.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+
+# Publish profiles (user-specific)
+*.pubxml.user
+**/PublishProfiles/*.pubxml.user
+
+# App settings com segredos
+appsettings.json
+appsettings.*.json
+!appsettings.json.example
+
+# Test results
+TestResults/
+coverage/
+[Dd]ebug/
+[Rr]elease/
+
+# Misc
+.DS_Store
+Thumbs.db
