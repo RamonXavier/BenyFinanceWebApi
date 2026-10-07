@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BenyFinance.Application.DTOs;
 using BenyFinance.Application.Interfaces;
@@ -17,16 +18,6 @@ public class ImportService : IImportService
 {
     private readonly ITransactionRepository _transactionRepository;
     private readonly ICategoryRepository _categoryRepository;
-
-    private static readonly HashSet<string> IncomeKeywords = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "transferencia recebida", "pix recebido", "recebido", "deposito", "reembolso", "restituicao", "credito", "entrada"
-    };
-
-    private static readonly HashSet<string> TransferKeywords = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "transferencia enviada", "pix enviado", "transferencia", "envio", "ted", "doc"
-    };
 
     public ImportService(ITransactionRepository transactionRepository, ICategoryRepository categoryRepository)
     {
@@ -55,8 +46,7 @@ public class ImportService : IImportService
         }
 
         if (lines.Count == 0) throw new Exception("Arquivo vazio");
-        // Remove header
-        lines.RemoveAt(0);
+        lines.RemoveAt(0); // header
 
         var items = new List<ImportPreviewItemDto>();
         int idx = 0;
@@ -72,41 +62,17 @@ public class ImportService : IImportService
                     "mercadopago" => ParseMercadoPago(l),
                     _ => ParseGeneric(l)
                 };
-
                 if (parsed == null) continue;
                 var (date, amount, desc) = parsed.Value;
-
-                // Determine type: if amount > 0 income, if amount < 0 expense
                 var type = amount >= 0 ? "income" : "expense";
-                var absDesc = desc.ToLower();
-
-                // Skip transfers if they look like moving money? But keep as expense/income? We'll classify based on amount sign.
-                // Suggest category based on description similarity
-                var suggested = SuggestCategory(categories, absDesc, existingDescriptions);
-                items.Add(new ImportPreviewItemDto(
-                    idx,
-                    date,
-                    desc,
-                    Math.Abs(amount),
-                    type,
-                    suggested.Name,
-                    suggested.Id,
-                    "cash",
-                    null,
-                    "pending",
-                    true,
-                    null,
-                    false
-                ));
+                var suggested = SuggestCategory(categories, desc.ToLower());
+                items.Add(new ImportPreviewItemDto(idx, date, desc, Math.Abs(amount), type, suggested.Name, suggested.Id, "cash", null, "pending", true, null, false));
             }
             catch (Exception ex)
             {
-                items.Add(new ImportPreviewItemDto(
-                    idx, DateTime.Today, l, 0, "expense", categories.FirstOrDefault()?.Name ?? "Outros", categories.FirstOrDefault()?.Id, "cash", null, "pending", false, ex.Message, false
-                ));
+                items.Add(new ImportPreviewItemDto(idx, DateTime.Today, l, 0, "expense", categories.FirstOrDefault()?.Name ?? "Outros", categories.FirstOrDefault()?.Id, "cash", null, "pending", false, ex.Message, false));
             }
         }
-
         return new ImportPreviewDto(items.Count, items.Count(i => i.IsValid), items);
     }
 
@@ -132,23 +98,10 @@ public class ImportService : IImportService
                     catId = newCat.Id;
                 }
             }
-
             if (!Enum.TryParse<TransactionType>(item.Type, true, out var type)) continue;
             if (!Enum.TryParse<PaymentMethod>(item.PaymentMethod, true, out var pm)) pm = PaymentMethod.Cash;
             if (!Enum.TryParse<TransactionStatus>(item.Status, true, out var st)) st = TransactionStatus.Pending;
-
-            var tx = new Transaction
-            {
-                Date = item.Date,
-                Description = item.Description,
-                Amount = item.Amount,
-                Type = type,
-                CategoryId = catId,
-                PaymentMethod = pm,
-                CardId = item.CardId,
-                Status = st,
-                UserId = userId
-            };
+            var tx = new Transaction { Date = item.Date, Description = item.Description, Amount = item.Amount, Type = type, CategoryId = catId, PaymentMethod = pm, CardId = item.CardId, Status = st, UserId = userId };
             await _transactionRepository.AddAsync(tx);
             count++;
         }
@@ -157,24 +110,36 @@ public class ImportService : IImportService
 
     private (DateTime date, decimal amount, string desc)? ParseNubank(string line)
     {
-        // CSV: Data,Valor,Identificador,Descrição
-        // Example: 01/04/2026,-14.00,uuid,Descrição
         var parts = SplitCsv(line);
         if (parts.Length < 4) return null;
         if (!DateTime.TryParseExact(parts[0].Trim(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-        {
             if (!DateTime.TryParse(parts[0].Trim(), CultureInfo.GetCultureInfo("pt-BR"), out date)) return null;
-        }
-        var valStr = parts[1].Trim().Replace(".", "").Replace(",", ".");
-        if (!decimal.TryParse(valStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var amount)) return null;
-        var desc = parts[3].Trim();
-        return (date, amount, desc);
+        if (!TryParseDecimal(parts[1], out var amount)) return null;
+        return (date, amount, parts[3].Trim());
     }
 
     private (DateTime date, decimal amount, string desc)? ParseMercadoPago(string line)
     {
-        // Try common MP formats; fallback generic
-        return ParseGeneric(line);
+        var parts = SplitCsv(line);
+        if (parts.Length < 3) return null;
+        // try to find date
+        int dateIdx = 0; int valIdx = -1;
+        for (int i = 0; i < Math.Min(parts.Length, 4); i++)
+        {
+            if (DateTime.TryParseExact(parts[i].Trim(), new[] { "dd/MM/yyyy", "dd/MM/yy", "yyyy-MM-dd" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            { dateIdx = i; break; }
+        }
+        for (int i = 0; i < parts.Length; i++)
+        {
+            var v = parts[i].Trim();
+            if (v.Contains("R$") || Regex.IsMatch(v, @"[-+]?\d+[.,]\d+"))
+            { if (i == dateIdx) continue; valIdx = i; break; }
+        }
+        if (!DateTime.TryParseExact(parts[dateIdx].Trim(), new[] { "dd/MM/yyyy", "dd/MM/yy", "yyyy-MM-dd" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var d)) return null;
+        if (valIdx == -1 || !TryParseDecimal(parts[valIdx], out var amt)) return null;
+        var descParts = parts.Where((p, i) => i != dateIdx && i != valIdx).ToArray();
+        var descStr = descParts.Length > 0 ? string.Join(" ", descParts).Trim('"') : parts[1].Trim('"');
+        return (d, amt, descStr);
     }
 
     private (DateTime date, decimal amount, string desc)? ParseGeneric(string line)
@@ -183,14 +148,24 @@ public class ImportService : IImportService
         if (parts.Length < 3) return null;
         if (DateTime.TryParseExact(parts[0].Trim(), new[] { "dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy" }, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
         {
-            var valStr = parts[1].Trim().Replace("R$", "").Replace(".", "").Replace(",", ".");
-            if (decimal.TryParse(valStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var amount))
+            if (TryParseDecimal(parts[1], out var amount))
             {
                 var desc = string.Join(" ", parts.Skip(2)).Trim('"');
                 return (date, amount, desc);
             }
         }
         return null;
+    }
+
+    private bool TryParseDecimal(string v, out decimal amt)
+    {
+        amt = 0;
+        if (string.IsNullOrWhiteSpace(v)) return false;
+        v = v.Trim().Replace("R$", "").Replace(" ", "");
+        if (v.Contains("(") && v.Contains(")")) v = "-" + v.Replace("(", "").Replace(")", "");
+        if (v.StartsWith("+")) v = v.Substring(1);
+        v = v.Replace(".", "").Replace(",", ".");
+        return decimal.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out amt);
     }
 
     private string[] SplitCsv(string line)
@@ -201,50 +176,36 @@ public class ImportService : IImportService
         for (int i = 0; i < line.Length; i++)
         {
             var c = line[i];
-            if (c == '"' && (i == 0 || line[i - 1] != '\\'))
-            {
-                inQuotes = !inQuotes;
-                continue;
-            }
-            if (c == ',' && !inQuotes)
-            {
-                result.Add(sb.ToString());
-                sb.Clear();
-                continue;
-            }
+            if (c == '"' && (i == 0 || line[i - 1] != '\\')) { inQuotes = !inQuotes; continue; }
+            if (c == ',' && !inQuotes) { result.Add(sb.ToString()); sb.Clear(); continue; }
             sb.Append(c);
         }
         result.Add(sb.ToString());
         return result.ToArray();
     }
 
-    private (Guid? Id, string Name) SuggestCategory(List<Category> categories, string absDesc, Dictionary<string, int> existing)
+    private (Guid? Id, string Name) SuggestCategory(List<Category> categories, string absDesc)
     {
-        // 1. Exact match in existing transactions descriptions -> suggest category from that pattern? Or simple heuristic
-        // Simple heuristic: look for keywords in categories? Or common names
-        // Try to find category name contained in desc
         foreach (var cat in categories)
         {
             if (absDesc.Contains(cat.Name.ToLower())) return (cat.Id, cat.Name);
         }
-        // Common mappings
-        if (absDesc.Contains("super") || absDesc.Contains("mercado") || absDesc.Contains("padaria") || absDesc.Contains("ifd") || absDesc.Contains("loja") || absDesc.Contains("atacado") || absDesc.Contains("comercio"))
+        if (absDesc.Contains("super") || absDesc.Contains("mercado") || absDesc.Contains("padaria") || absDesc.Contains("ifd") || absDesc.Contains("loja") || absDesc.Contains("atacado"))
             return (FindCategoryId(categories, "Alimentação"), "Alimentação");
-        if (absDesc.Contains("uber") || absDesc.Contains("99") || absDesc.Contains("posto") || absDesc.Contains("combustivel") || absDesc.Contains("gasolina") || absDesc.Contains("shell") || absDesc.Contains("ipiranga"))
+        if (absDesc.Contains("uber") || absDesc.Contains("99") || absDesc.Contains("posto") || absDesc.Contains("combustivel") || absDesc.Contains("gasolina"))
             return (FindCategoryId(categories, "Transporte"), "Transporte");
-        if (absDesc.Contains("farmacia") || absDesc.Contains("hospital") || absDesc.Contains("consulta") || absDesc.Contains("medico") || absDesc.Contains("drogaria") || absDesc.Contains("clínica"))
+        if (absDesc.Contains("farmacia") || absDesc.Contains("hospital") || absDesc.Contains("consulta") || absDesc.Contains("medico") || absDesc.Contains("drogaria"))
             return (FindCategoryId(categories, "Saúde"), "Saúde");
-        if (absDesc.Contains("energia") || absDesc.Contains("agua") || absDesc.Contains("internet") || absDesc.Contains("telefone") || absDesc.Contains("net") || absDesc.Contains("claro") || absDesc.Contains("vivo") || absDesc.Contains("tim") || absDesc.Contains("enel"))
+        if (absDesc.Contains("energia") || absDesc.Contains("agua") || absDesc.Contains("internet") || absDesc.Contains("telefone") || absDesc.Contains("net") || absDesc.Contains("claro") || absDesc.Contains("vivo") || absDesc.Contains("tim"))
             return (FindCategoryId(categories, "Contas"), "Contas");
         if (absDesc.Contains("aluguel") || absDesc.Contains("condominio") || absDesc.Contains("iptu"))
             return (FindCategoryId(categories, "Moradia"), "Moradia");
         if (absDesc.Contains("cinema") || absDesc.Contains("netflix") || absDesc.Contains("spotify") || absDesc.Contains("ifood") || absDesc.Contains("restaurante") || absDesc.Contains("delivery") || absDesc.Contains("lazer"))
             return (FindCategoryId(categories, "Lazer"), "Lazer");
-        if (absDesc.Contains("vestuario") || absDesc.Contains("roupa") || absDesc.Contains("shoes") || absDesc.Contains("magazine") || absDesc.Contains("renner"))
+        if (absDesc.Contains("vestuario") || absDesc.Contains("roupa") || absDesc.Contains("renner") || absDesc.Contains("magazine"))
             return (FindCategoryId(categories, "Vestuário"), "Vestuário");
         if (absDesc.Contains("salario") || absDesc.Contains("pagamento") || absDesc.Contains("remuneração"))
             return (FindCategoryId(categories, "Salário"), "Salário");
-        // Default
         return (categories.FirstOrDefault(c => c.Name.Equals("Outros", StringComparison.OrdinalIgnoreCase))?.Id, "Outros");
     }
 
